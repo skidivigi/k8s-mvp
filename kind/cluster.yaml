@@ -1,0 +1,28 @@
+# Создай kind-кластер с именем platform-lab,
+# используя формат конфигурации kind.x-k8s.io/v1alpha4.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: platform-lab
+
+nodes:
+  # control-plane — управляющая нода Kubernetes
+  # worker        — нода, где запускаются приложения
+  # extraPortMappings — проброс 80/443 с kind-кластера на localhost
+  - role: control-plane
+    # Нужно для ingress урока
+    kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "ingress-ready=true"
+    extraPortMappings:
+      - containerPort: 80
+        hostPort: 80
+        protocol: TCP
+      - containerPort: 443
+        hostPort: 443
+        protocol: TCP
+
+  - role: worker
+  - role: worker

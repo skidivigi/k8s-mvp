@@ -238,4 +238,64 @@ test-ingress-host-6:
 delete-ingress-6:
 	kubectl delete -f k8s/05-ingress/ingress.yaml
 
+# 7th lab - Storage
+
+.PHONY: apply-storage-7
+apply-storage-7:
+	kubectl apply -f k8s/06-storage/pvc.yaml
+	kubectl apply -f k8s/06-storage/deployment-with-volume.yaml
+
+.PHONY: get-pvc-7
+get-pvc-7:
+	kubectl get pvc -n lab
+
+.PHONY: describe-pvc-7
+describe-pvc-7:
+	kubectl describe pvc hello-pvc -n lab
+
+.PHONY: get-pv-7
+get-pv-7:
+	kubectl get pv
+
+.PHONY: get-storageclass-7
+get-storageclass-7:
+	kubectl get storageclass
+
+.PHONY: get-pods-7
+get-pods-7:
+	kubectl get pods -n lab -l app=hello-storage -o wide
+
+.PHONY: exec-storage-7
+exec-storage-7:
+	kubectl exec -it deploy/hello-storage-deployment -n lab -- sh
+
+.PHONY: write-storage-7
+write-storage-7:
+	kubectl exec -it deploy/hello-storage-deployment -n lab -- sh -c 'echo "Hello from PVC" > /usr/share/nginx/html/index.html'
+
+.PHONY: read-storage-7
+read-storage-7:
+	kubectl exec -it deploy/hello-storage-deployment -n lab -- cat /usr/share/nginx/html/index.html
+
+.PHONY: forward-storage-7
+forward-storage-7:
+	kubectl port-forward deploy/hello-storage-deployment 8082:80 -n lab
+
+.PHONY: restart-storage-7
+restart-storage-7:
+	kubectl rollout restart deploy/hello-storage-deployment -n lab
+
+.PHONY: delete-storage-deploy-7
+delete-storage-deploy-7:
+	kubectl delete -f k8s/06-storage/deployment-with-volume.yaml
+
+.PHONY: delete-storage-pvc-7
+delete-storage-pvc-7:
+	kubectl delete -f k8s/06-storage/pvc.yaml
+
+.PHONY: delete-storage-7
+delete-storage-7:
+	kubectl delete -f k8s/06-storage/deployment-with-volume.yaml
+	kubectl delete -f k8s/06-storage/pvc.yaml
+
 

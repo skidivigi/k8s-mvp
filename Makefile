@@ -298,4 +298,91 @@ delete-storage-7:
 	kubectl delete -f k8s/06-storage/deployment-with-volume.yaml
 	kubectl delete -f k8s/06-storage/pvc.yaml
 
+# 8th lab - StatefulSet
+
+.PHONY: apply-statefulset-8
+apply-statefulset-8:
+	kubectl apply -f k8s/07-statefulset/headless-service.yaml
+	kubectl apply -f k8s/07-statefulset/statefulset.yaml
+
+.PHONY: get-statefulset-8
+get-statefulset-8:
+	kubectl get statefulset -n lab
+
+.PHONY: get-sts-8
+get-sts-8:
+	kubectl get sts -n lab
+
+.PHONY: describe-statefulset-8
+describe-statefulset-8:
+	kubectl describe statefulset nginx-stateful -n lab
+
+.PHONY: get-pods-8
+get-pods-8:
+	kubectl get pods -n lab -l app=nginx-stateful -o wide
+
+.PHONY: get-pvc-8
+get-pvc-8:
+	kubectl get pvc -n lab -l app=nginx-stateful
+
+.PHONY: get-all-pvc-8
+get-all-pvc-8:
+	kubectl get pvc -n lab
+
+.PHONY: get-headless-service-8
+get-headless-service-8:
+	kubectl get svc nginx-stateful -n lab
+
+.PHONY: describe-headless-service-8
+describe-headless-service-8:
+	kubectl describe svc nginx-stateful -n lab
+
+.PHONY: write-stateful-0-8
+write-stateful-0-8:
+	kubectl exec -it nginx-stateful-0 -n lab -- sh -c 'echo "Hello from nginx-stateful-0" > /usr/share/nginx/html/index.html'
+
+.PHONY: write-stateful-1-8
+write-stateful-1-8:
+	kubectl exec -it nginx-stateful-1 -n lab -- sh -c 'echo "Hello from nginx-stateful-1" > /usr/share/nginx/html/index.html'
+
+.PHONY: write-stateful-2-8
+write-stateful-2-8:
+	kubectl exec -it nginx-stateful-2 -n lab -- sh -c 'echo "Hello from nginx-stateful-2" > /usr/share/nginx/html/index.html'
+
+.PHONY: read-stateful-0-8
+read-stateful-0-8:
+	kubectl exec -it nginx-stateful-0 -n lab -- cat /usr/share/nginx/html/index.html
+
+.PHONY: read-stateful-1-8
+read-stateful-1-8:
+	kubectl exec -it nginx-stateful-1 -n lab -- cat /usr/share/nginx/html/index.html
+
+.PHONY: read-stateful-2-8
+read-stateful-2-8:
+	kubectl exec -it nginx-stateful-2 -n lab -- cat /usr/share/nginx/html/index.html
+
+.PHONY: delete-stateful-pod-0-8
+delete-stateful-pod-0-8:
+	kubectl delete pod nginx-stateful-0 -n lab
+
+.PHONY: scale-statefulset-8
+scale-statefulset-8:
+	kubectl scale statefulset nginx-stateful --replicas=5 -n lab
+
+.PHONY: scale-statefulset-back-8
+scale-statefulset-back-8:
+	kubectl scale statefulset nginx-stateful --replicas=3 -n lab
+
+.PHONY: rollout-status-statefulset-8
+rollout-status-statefulset-8:
+	kubectl rollout status statefulset/nginx-stateful -n lab
+
+.PHONY: delete-statefulset-8
+delete-statefulset-8:
+	kubectl delete -f k8s/07-statefulset/statefulset.yaml
+	kubectl delete -f k8s/07-statefulset/headless-service.yaml
+
+.PHONY: delete-statefulset-pvc-8
+delete-statefulset-pvc-8:
+	kubectl delete pvc -n lab -l app=nginx-stateful
 

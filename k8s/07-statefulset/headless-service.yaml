@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-stateful
+  namespace: lab
+  labels:
+    app: nginx-stateful
+spec:
+  clusterIP: None
+  selector:
+    app: nginx-stateful
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80

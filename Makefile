@@ -386,3 +386,59 @@ delete-statefulset-8:
 delete-statefulset-pvc-8:
 	kubectl delete pvc -n lab -l app=nginx-stateful
 
+# 9th lab - Probes and Resources
+
+.PHONY: apply-probes-9
+apply-probes-9:
+	kubectl apply -f k8s/08-probes-resources/deployment.yaml
+	kubectl apply -f k8s/08-probes-resources/service.yaml
+
+.PHONY: get-probes-deploy-9
+get-probes-deploy-9:
+	kubectl get deploy hello-probes -n lab
+
+.PHONY: get-probes-pods-9
+get-probes-pods-9:
+	kubectl get pods -n lab -l app=hello-probes -o wide
+
+.PHONY: describe-probes-deploy-9
+describe-probes-deploy-9:
+	kubectl describe deploy hello-probes -n lab
+
+.PHONY: describe-probes-pod-9
+describe-probes-pod-9:
+	kubectl describe pod -n lab -l app=hello-probes
+
+.PHONY: get-probes-service-9
+get-probes-service-9:
+	kubectl get svc hello-probes-service -n lab
+
+.PHONY: describe-probes-service-9
+describe-probes-service-9:
+	kubectl describe svc hello-probes-service -n lab
+
+.PHONY: get-probes-endpoints-9
+get-probes-endpoints-9:
+	kubectl get endpoints hello-probes-service -n lab
+
+.PHONY: forward-probes-9
+forward-probes-9:
+	kubectl port-forward svc/hello-probes-service 8083:80 -n lab
+
+.PHONY: test-probes-9
+test-probes-9:
+	kubectl run curl-probes-test --rm -it --image=curlimages/curl:8.10.1 -n lab -- curl http://hello-probes-service
+
+.PHONY: top-pods-9
+top-pods-9:
+	kubectl top pods -n lab
+
+.PHONY: top-nodes-9
+top-nodes-9:
+	kubectl top nodes
+
+.PHONY: delete-probes-9
+delete-probes-9:
+	kubectl delete -f k8s/08-probes-resources/service.yaml
+	kubectl delete -f k8s/08-probes-resources/deployment.yaml
+

@@ -152,16 +152,17 @@ make delete
 7. [Volumes, PV и PVC](docs/7th.md)
 8. [Stateful Set](docs/8th.md)
 9. [Probes, requests и limits](docs/9th.md)
-10. [RBAC](docs/10th.md)
-11. [NetworkPolicy](docs/11th.md)
+10. [Metrics Server и kubectl top](docs/10th.md)
+11. [RBAC](docs/11th.md)
+12. [NetworkPolicy](docs/12th.md)
 
 ### Дальше
 
-12. [Helm](docs/12th.md)
-13. [Argo CD и GitOps](docs/13th.md)
-14. [cert-manager и TLS](docs/14th.md)
-15. [Observability](docs/15th.md)
-16. [Security basics](docs/16th.md)
+13. [Helm](docs/13th.md)
+14. [Argo CD и GitOps](docs/14th.md)
+15. [cert-manager и TLS](docs/15th.md)
+16. [Observability](docs/16th.md)
+17. [Security basics](docs/17th.md)
 
 ## Главная мысль
 

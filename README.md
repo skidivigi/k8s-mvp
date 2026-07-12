@@ -52,6 +52,7 @@ kind cluster
   ├── helm
   ├── argocd
   ├── metrics-server
+  ├── service-mesh
   └── observability
 ```
 
@@ -79,7 +80,8 @@ kubernetes-platform-lab/
 │   ├── 08-probes-resources/
 │   ├── 09-metrics-server/
 │   ├── 10-rbac/
-│   └── 11-network-policy/
+│   ├── 11-network-policy/
+│   └── 12-service-mesh/
 ├── helm/
 ├── argocd/
 └── docs/
@@ -159,14 +161,15 @@ make delete
 10. [Metrics Server и kubectl top](docs/10th.md)
 11. [RBAC](docs/11th.md)
 12. [NetworkPolicy](docs/12th.md)
+13. [Service Mesh/Istio](docs/13th.md)
 
 ### Дальше
 
-13. [Helm](docs/13th.md)
-14. [Argo CD и GitOps](docs/14th.md)
-15. [cert-manager и TLS](docs/15th.md)
-16. [Observability](docs/16th.md)
-17. [Security basics](docs/17th.md)
+14. [Helm](docs/14th.md)
+15. [Argo CD и GitOps](docs/15th.md)
+16. [cert-manager и TLS](docs/16th.md)
+17. [Observability](docs/17th.md)
+18. [Security basics](docs/18th.md)
 
 ## Главная мысль
 

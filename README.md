@@ -44,12 +44,14 @@ kind cluster
   ├── ingress
   ├── configmap / secret
   ├── volumes
+  ├── statefulset
   ├── probes
   ├── requests / limits
   ├── rbac
   ├── network policy
   ├── helm
   ├── argocd
+  ├── metrics-server
   └── observability
 ```
 
@@ -73,9 +75,11 @@ kubernetes-platform-lab/
 │   ├── 04-configmap-secret/
 │   ├── 05-ingress/
 │   ├── 06-storage/
-│   ├── 07-probes-resources/
-│   ├── 08-rbac/
-│   └── 09-network-policy/
+│   ├── 07-statefulset/
+│   ├── 08-probes-resources/
+│   ├── 09-metrics-server/
+│   ├── 10-rbac/
+│   └── 11-network-policy/
 ├── helm/
 ├── argocd/
 └── docs/

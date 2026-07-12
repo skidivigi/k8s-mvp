@@ -442,3 +442,59 @@ delete-probes-9:
 	kubectl delete -f k8s/08-probes-resources/service.yaml
 	kubectl delete -f k8s/08-probes-resources/deployment.yaml
 
+# 10th lab - Metrics Server
+
+.PHONY: install-metrics-server-10
+install-metrics-server-10:
+	kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+.PHONY: patch-metrics-server-10
+patch-metrics-server-10:
+	kubectl patch deployment metrics-server -n kube-system --type='strategic' --patch-file k8s/09-metrics-server/patch.yaml
+
+.PHONY: rollout-metrics-server-10
+rollout-metrics-server-10:
+	kubectl rollout status deployment/metrics-server -n kube-system --timeout=180s
+
+.PHONY: setup-metrics-server-10
+setup-metrics-server-10:
+	kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+	kubectl patch deployment metrics-server -n kube-system --type='strategic' --patch-file k8s/09-metrics-server/patch.yaml
+	kubectl rollout status deployment/metrics-server -n kube-system --timeout=180s
+
+.PHONY: get-metrics-server-10
+get-metrics-server-10:
+	kubectl get pods -n kube-system -l k8s-app=metrics-server -o wide
+
+.PHONY: describe-metrics-server-10
+describe-metrics-server-10:
+	kubectl describe deployment metrics-server -n kube-system
+
+.PHONY: logs-metrics-server-10
+logs-metrics-server-10:
+	kubectl logs -n kube-system -l k8s-app=metrics-server
+
+.PHONY: top-pods-10
+top-pods-10:
+	kubectl top pods -n lab
+
+.PHONY: top-pods-all-10
+top-pods-all-10:
+	kubectl top pods -A
+
+.PHONY: top-nodes-10
+top-nodes-10:
+	kubectl top nodes
+
+.PHONY: raw-node-metrics-10
+raw-node-metrics-10:
+	kubectl get --raw "/apis/metrics.k8s.io/v1beta1/nodes" | jq .
+
+.PHONY: raw-pod-metrics-10
+raw-pod-metrics-10:
+	kubectl get --raw "/apis/metrics.k8s.io/v1beta1/pods" | jq .
+
+.PHONY: delete-metrics-server-10
+delete-metrics-server-10:
+	kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+

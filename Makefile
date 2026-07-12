@@ -498,3 +498,71 @@ raw-pod-metrics-10:
 delete-metrics-server-10:
 	kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
+# 11th lab - RBAC
+
+.PHONY: apply-rbac-11
+apply-rbac-11:
+	kubectl apply -f k8s/10-rbac/service-account.yaml
+	kubectl apply -f k8s/10-rbac/role.yaml
+	kubectl apply -f k8s/10-rbac/role-binding.yaml
+	kubectl apply -f k8s/10-rbac/test-pod.yaml
+
+.PHONY: get-rbac-sa-11
+get-rbac-sa-11:
+	kubectl get serviceaccount -n lab
+
+.PHONY: get-rbac-role-11
+get-rbac-role-11:
+	kubectl get role -n lab
+
+.PHONY: get-rbac-rolebinding-11
+get-rbac-rolebinding-11:
+	kubectl get rolebinding -n lab
+
+.PHONY: get-rbac-pod-11
+get-rbac-pod-11:
+	kubectl get pod rbac-test-pod -n lab
+
+.PHONY: describe-rbac-sa-11
+describe-rbac-sa-11:
+	kubectl describe serviceaccount demo-reader -n lab
+
+.PHONY: describe-rbac-role-11
+describe-rbac-role-11:
+	kubectl describe role pod-reader -n lab
+
+.PHONY: describe-rbac-rolebinding-11
+describe-rbac-rolebinding-11:
+	kubectl describe rolebinding demo-reader-pod-reader -n lab
+
+.PHONY: auth-can-list-pods-11
+auth-can-list-pods-11:
+	kubectl auth can-i list pods -n lab --as=system:serviceaccount:lab:demo-reader
+
+.PHONY: auth-can-delete-pods-11
+auth-can-delete-pods-11:
+	kubectl auth can-i delete pods -n lab --as=system:serviceaccount:lab:demo-reader
+
+.PHONY: auth-can-list-services-11
+auth-can-list-services-11:
+	kubectl auth can-i list services -n lab --as=system:serviceaccount:lab:demo-reader
+
+.PHONY: exec-rbac-list-pods-11
+exec-rbac-list-pods-11:
+	kubectl exec -it rbac-test-pod -n lab -- kubectl get pods -n lab
+
+.PHONY: exec-rbac-list-services-11
+exec-rbac-list-services-11:
+	kubectl exec -it rbac-test-pod -n lab -- kubectl get services -n lab
+
+.PHONY: exec-rbac-delete-pod-11
+exec-rbac-delete-pod-11:
+	kubectl exec -it rbac-test-pod -n lab -- kubectl delete pod hello-pod -n lab
+
+.PHONY: delete-rbac-11
+delete-rbac-11:
+	kubectl delete -f k8s/10-rbac/test-pod.yaml --ignore-not-found
+	kubectl delete -f k8s/10-rbac/role-binding.yaml --ignore-not-found
+	kubectl delete -f k8s/10-rbac/role.yaml --ignore-not-found
+	kubectl delete -f k8s/10-rbac/service-account.yaml --ignore-not-found
+

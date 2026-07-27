@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-backend
+  namespace: lab
+  labels:
+    app: network-backend
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: network-backend
+
+  template:
+    metadata:
+      labels:
+        app: network-backend
+        role: backend
+
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 80
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+
+            initialDelaySeconds: 2
+            periodSeconds: 5
+
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+
+            limits:
+              cpu: 100m
+              memory: 128Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: network-backend
+  namespace: lab
+spec:
+  type: ClusterIP
+
+  selector:
+    app: network-backend
+
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: http

@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-client-to-backend
+  namespace: lab
+spec:
+  podSelector:
+    matchLabels:
+      app: network-backend
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: network-client
+
+      ports:
+        - protocol: TCP
+          port: 80

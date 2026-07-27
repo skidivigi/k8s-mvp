@@ -566,3 +566,160 @@ delete-rbac-11:
 	kubectl delete -f k8s/10-rbac/role.yaml --ignore-not-found
 	kubectl delete -f k8s/10-rbac/service-account.yaml --ignore-not-found
 
+# 12th lab - Cilium + NetworkPolicy
+
+CILIUM_VERSION=1.19.6
+NETWORK_DIR=k8s/11-cilium-network-policy
+
+.PHONY: install-cilium-cli-12
+install-cilium-cli-12:
+	@set -e; \
+	CILIUM_CLI_VERSION=$$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt); \
+	CLI_ARCH=amd64; \
+	if [ "$$(uname -m)" = "aarch64" ]; then CLI_ARCH=arm64; fi; \
+	curl -L --fail --remote-name-all \
+		https://github.com/cilium/cilium-cli/releases/download/$${CILIUM_CLI_VERSION}/cilium-linux-$${CLI_ARCH}.tar.gz{,.sha256sum}; \
+	sha256sum --check cilium-linux-$${CLI_ARCH}.tar.gz.sha256sum; \
+	sudo tar xzvfC cilium-linux-$${CLI_ARCH}.tar.gz /usr/local/bin; \
+	rm cilium-linux-$${CLI_ARCH}.tar.g*; \
+	cilium version --client
+
+.PHONY: install-cilium-12
+install-cilium-12:
+	cilium install --version $(CILIUM_VERSION)
+
+.PHONY: wait-cilium-12
+wait-cilium-12:
+	cilium status --wait
+
+.PHONY: status-cilium-12
+status-cilium-12:
+	cilium status
+
+.PHONY: get-cilium-pods-12
+get-cilium-pods-12:
+	kubectl get pods -n kube-system -l k8s-app=cilium -o wide
+
+.PHONY: get-cilium-operator-12
+get-cilium-operator-12:
+	kubectl get pods -n kube-system -l name=cilium-operator -o wide
+
+.PHONY: check-kindnet-12
+check-kindnet-12:
+	kubectl get daemonset -n kube-system
+
+.PHONY: connectivity-test-cilium-12
+connectivity-test-cilium-12:
+	cilium connectivity test
+
+.PHONY: delete-connectivity-test-12
+delete-connectivity-test-12:
+	kubectl delete namespace cilium-test --ignore-not-found
+
+.PHONY: apply-network-demo-12
+apply-network-demo-12:
+	kubectl apply -f $(NETWORK_DIR)/backend.yaml
+	kubectl apply -f $(NETWORK_DIR)/client.yaml
+	kubectl apply -f $(NETWORK_DIR)/stranger.yaml
+
+.PHONY: get-network-demo-12
+get-network-demo-12:
+	kubectl get pods,service -n lab -o wide
+
+.PHONY: get-cilium-endpoints-12
+get-cilium-endpoints-12:
+	kubectl get ciliumendpoints -n lab -o wide
+
+.PHONY: test-client-before-policy-12
+test-client-before-policy-12:
+	kubectl exec -n lab network-client -- \
+		curl --silent --show-error --max-time 3 http://network-backend
+
+.PHONY: test-stranger-before-policy-12
+test-stranger-before-policy-12:
+	kubectl exec -n lab network-stranger -- \
+		curl --silent --show-error --max-time 3 http://network-backend
+
+.PHONY: apply-deny-backend-ingress-12
+apply-deny-backend-ingress-12:
+	kubectl apply -f $(NETWORK_DIR)/01-deny-backend-ingress.yaml
+
+.PHONY: apply-allow-client-ingress-12
+apply-allow-client-ingress-12:
+	kubectl apply -f $(NETWORK_DIR)/02-allow-client-to-backend.yaml
+
+.PHONY: test-client-backend-12
+test-client-backend-12:
+	kubectl exec -n lab network-client -- \
+		curl --silent --show-error --max-time 3 http://network-backend
+
+.PHONY: test-stranger-backend-12
+test-stranger-backend-12:
+	kubectl exec -n lab network-stranger -- \
+		curl --silent --show-error --max-time 3 http://network-backend
+
+.PHONY: apply-deny-client-egress-12
+apply-deny-client-egress-12:
+	kubectl apply -f $(NETWORK_DIR)/03-deny-client-egress.yaml
+
+.PHONY: apply-allow-client-dns-12
+apply-allow-client-dns-12:
+	kubectl apply -f $(NETWORK_DIR)/04-allow-client-dns.yaml
+
+.PHONY: apply-allow-client-backend-egress-12
+apply-allow-client-backend-egress-12:
+	kubectl apply -f $(NETWORK_DIR)/05-allow-client-to-backend-egress.yaml
+
+.PHONY: test-client-dns-12
+test-client-dns-12:
+	kubectl exec -n lab network-client -- nslookup network-backend
+
+.PHONY: test-client-internet-12
+test-client-internet-12:
+	kubectl exec -n lab network-client -- \
+		curl --silent --show-error --max-time 3 https://example.com
+
+.PHONY: get-network-policies-12
+get-network-policies-12:
+	kubectl get networkpolicy -n lab
+
+.PHONY: describe-network-policies-12
+describe-network-policies-12:
+	kubectl describe networkpolicy -n lab
+
+.PHONY: delete-network-policies-12
+delete-network-policies-12:
+	kubectl delete networkpolicy --all -n lab
+
+.PHONY: enable-hubble-12
+enable-hubble-12:
+	cilium hubble enable --ui
+
+.PHONY: hubble-status-12
+hubble-status-12:
+	hubble status -P
+
+.PHONY: hubble-observe-lab-12
+hubble-observe-lab-12:
+	hubble observe -P --namespace lab
+
+.PHONY: hubble-observe-dropped-12
+hubble-observe-dropped-12:
+	hubble observe -P --namespace lab --verdict DROPPED
+
+.PHONY: hubble-ui-12
+hubble-ui-12:
+	cilium hubble ui
+
+.PHONY: delete-network-demo-12
+delete-network-demo-12:
+	kubectl delete -f $(NETWORK_DIR)/05-allow-client-to-backend-egress.yaml --ignore-not-found
+	kubectl delete -f $(NETWORK_DIR)/04-allow-client-dns.yaml --ignore-not-found
+	kubectl delete -f $(NETWORK_DIR)/03-deny-client-egress.yaml --ignore-not-found
+	kubectl delete -f $(NETWORK_DIR)/02-allow-client-to-backend.yaml --ignore-not-found
+	kubectl delete -f $(NETWORK_DIR)/01-deny-backend-ingress.yaml --ignore-not-found
+	kubectl delete -f $(NETWORK_DIR)/stranger.yaml --ignore-not-found
+	kubectl delete -f $(NETWORK_DIR)/client.yaml --ignore-not-found
+	kubectl delete -f $(NETWORK_DIR)/backend.yaml --ignore-not-found
+
+

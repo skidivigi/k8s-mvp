@@ -4,6 +4,10 @@ kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 name: platform-lab
 
+# Выключает дефолтный CNI для 12ого урока с Cilium
+# networking:
+#   disableDefaultCNI: true
+
 nodes:
   # control-plane — управляющая нода Kubernetes
   # worker        — нода, где запускаются приложения
